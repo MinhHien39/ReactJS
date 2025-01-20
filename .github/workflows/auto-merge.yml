@@ -1,0 +1,35 @@
+name: Auto Merge Develop to Main
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Clone repository và fetch đầy đủ các nhánh
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Tải toàn bộ nhánh và lịch sử commit
+
+      # 2. Chuyển sang nhánh main
+      - name: Switch to Main
+        run: |
+          git fetch origin main:main # Tải nhánh main nếu chưa có
+          git checkout main
+
+      # 3. Cấu hình Git
+      - name: Configure Git
+        run: |
+          git config user.name "MinhHien39"
+          git config user.email "tranminhhien06072001@gmail.com"
+
+      # 4. Merge develop vào main
+      - name: Merge Develop to Main
+        run: |
+          git merge develop --no-ff --no-edit || echo "No changes to merge."
+          git push origin main
