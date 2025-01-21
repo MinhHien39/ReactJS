@@ -14,6 +14,14 @@ const TestComponent = ({ title, onClick }) => {
   );
 };
 
+const AnotherComponent = ({ description }) => {
+  return (
+    <div style={styles.anotherContainer}>
+      <p style={styles.description}>{description || "Default Description"}</p>
+    </div>
+  );
+};
+
 const styles = {
   container: {
     padding: '20px',
@@ -38,6 +46,19 @@ const styles = {
     borderRadius: '4px',
     cursor: 'pointer',
   },
+  anotherContainer: {
+    padding: '15px',
+    border: '1px solid #ddd',
+    borderRadius: '6px',
+    textAlign: 'center',
+    maxWidth: '250px',
+    margin: '15px auto',
+    backgroundColor: '#fff',
+  },
+  description: {
+    fontSize: '16px',
+    color: '#555',
+  },
 };
 
-export default TestComponent;
+export { TestComponent, AnotherComponent };
