@@ -1,9 +1,11 @@
 name: Auto Merge Develop to Main
 
 on:
-  push:
+  pull_request:
     branches:
-      - develop # Kích hoạt khi có thay đổi trên nhánh develop
+      - develop
+    types:
+      - closed # Kích hoạt khi pull request được đóng (merged)
 
 jobs:
   auto-merge:
@@ -16,16 +18,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      # 2. Kiểm tra commit message cuối cùng
-      - name: 🚀 Check Commit Message for Prefix 🚀
-        id: check-commit-message
+      # 2. Kiểm tra nếu pull request đã được merged
+      - name: 🚀 Check if Pull Request is Merged 🚀
+        if: ${{ github.event.pull_request.merged == true }}
         run: |
-          LAST_COMMIT_MSG=$(git log -1 --pretty=%B)
-          echo "Last commit message: $LAST_COMMIT_MSG"
-          if [[ "$LAST_COMMIT_MSG" != "[MERGE]"* ]]; then
-            echo "Commit message does not start with [MERGE]. Exiting."
-            exit 0
-          fi
+          echo "Pull request merged into develop. Proceeding to merge develop into main."
+
       # 3. Cấu hình Git
       - name: 🐧 Configure Git 🐧
         run: |
@@ -41,7 +39,7 @@ jobs:
 
       # 5. Giải quyết conflict nếu có
       - name: 🍏 Resolve Conflicts 🍏
-        if: failure()
+        if: steps.attempt-merge.outcome == 'failure'
         run: |
           echo "Conflict detected. Resolving using 'ours' strategy."
           git merge develop --strategy-option ours || true
@@ -49,8 +47,8 @@ jobs:
           git commit -m "[MERGE] Resolved conflict using 'ours' strategy"
           git push origin main
 
-      # 6. Push kết quả nếu không có conflict
+      # 6. Push kết quả cuối cùng
       - name: 🔎 Final Push 🔎
-        if: steps.attempt-merge.outcome == 'success'
+        if: steps.attempt-merge.outcome == 'success' || steps.resolve-conflicts.outcome == 'success'
         run: |
           git push origin main
