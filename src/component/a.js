@@ -8,7 +8,7 @@ const TestComponent = ({ title, onClick }) => {
     <div style={styles.container}>
       <h1 style={styles.title}>{title || "Default Title"}</h1>
       <button style={styles.button} onClick={onClick}>
-        Click Me
+        Click Me123123123
       </button>
     </div>
   );
