@@ -24,9 +24,9 @@ jobs:
           echo "Last commit message: $LAST_COMMIT_MSG"
           if [[ "$LAST_COMMIT_MSG" != "[MERGE]"* ]]; then
             echo "❌ Commit message does not start with [MERGE]. Skipping merge."
-            exit 0 
+            exit 1
           fi
-          echo "✅ Commit message starts with [MERGE]. Proceeding to merge."
+          echo "✅ Commit message starts with [MERGE]. Proceeding to merge."  
 
       # 3. Cấu hình Git
       - name: ⚙️ Configure Git ⚙️ 
@@ -36,6 +36,7 @@ jobs:
 
       # 4. Merge develop vào main với commit message giữ nguyên
       - name: ✅ Merge Develop into Main ✅
+        if: success()
         run: |
           git checkout main
           git merge develop --no-ff --no-edit -m "[MERGE] Auto-merged develop into main"
