@@ -29,12 +29,9 @@ jobs:
 
       # 3. Cấu hình Git
       - name: ⚙️ Configure Git ⚙️ 
-        env:
-          GIT_USER_NAME: ${{ secrets.GIT_USER_NAME }}
-          GIT_USER_EMAIL: ${{ secrets.GIT_USER_EMAIL }}
         run: |
-          git config user.name "$GIT_USER_NAME"
-          git config user.email "$GIT_USER_EMAIL"
+          git config user.name "MinhHien39"
+          git config user.email "tranminhhien06072001@gmail.com"
 
       # 4. Merge develop vào main với commit message giữ nguyên
       - name: ✅ Merge Develop into Main ✅
