@@ -18,7 +18,7 @@ const TestComponent = ({ title, onClick }) => {
 const AnotherComponent = ({ description }) => {
   return (
     <div style={styles.anotherContainer}>
-      <p style={styles.description}>{description || "Default Description"}</p>
+      <p style={styles.description}>{description || "Default Description11111111111111111111111111111"}</p>
     </div>
   );
 };

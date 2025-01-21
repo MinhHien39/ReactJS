@@ -1,11 +1,9 @@
 name: Auto Merge Develop to Main
 
 on:
-  pull_request:
+  push:
     branches:
-      - develop
-    types:
-      - closed # Kích hoạt khi pull request được đóng (merged)
+      - develop # Kích hoạt khi có thay đổi trên nhánh develop
 
 jobs:
   auto-merge:
@@ -13,42 +11,31 @@ jobs:
 
     steps:
       # 1. Clone repository
-      - name: 🎉 Checkout Repository 🎉
+      - name: Checkout Repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      # 2. Kiểm tra nếu pull request đã được merged
-      - name: 🚀 Check if Pull Request is Merged 🚀
-        if: ${{ github.event.pull_request.merged == true }}
+      # 2. Kiểm tra commit message cuối cùng
+      - name: Check Commit Message for Prefix
+        id: check-commit-message
         run: |
-          echo "Pull request merged into develop. Proceeding to merge develop into main."
+          LAST_COMMIT_MSG=$(git log -1 --pretty=%B)
+          echo "Last commit message: $LAST_COMMIT_MSG"
+          if [[ "$LAST_COMMIT_MSG" != "[MERGE]"* ]]; then
+            echo "Commit message does not start with [MERGE]. Exiting."
+            exit 0
+          fi
 
       # 3. Cấu hình Git
-      - name: 🐧 Configure Git 🐧
+      - name: Configure Git
         run: |
           git config user.name "MinhHien39"
           git config user.email "tranminhhien06072001@gmail.com"
 
-      # 4. Merge develop vào main
-      - name: 💡 Attempt Merge Develop into Main 💡
-        id: attempt-merge
+      # 4. Merge develop vào main với commit message giữ nguyên
+      - name: Merge Develop into Main
         run: |
           git checkout main
-          git merge develop --no-ff --no-edit -m "[MERGE] Auto-merged develop into main" || true
-
-      # 5. Giải quyết conflict nếu có
-      - name: 🍏 Resolve Conflicts 🍏
-        if: steps.attempt-merge.outcome == 'failure'
-        run: |
-          echo "Conflict detected. Resolving using 'ours' strategy."
-          git merge develop --strategy-option ours || true
-          git status --short | grep "^UU" | awk '{print $2}' | xargs git add
-          git commit -m "[MERGE] Resolved conflict using 'ours' strategy"
-          git push origin main
-
-      # 6. Push kết quả cuối cùng
-      - name: 🔎 Final Push 🔎
-        if: steps.attempt-merge.outcome == 'success' || steps.resolve-conflicts.outcome == 'success'
-        run: |
+          git merge develop --no-ff --no-edit -m "[MERGE] Auto-merged develop into main"
           git push origin main
