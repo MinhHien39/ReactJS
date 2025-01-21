@@ -11,13 +11,13 @@ jobs:
 
     steps:
       # 1. Clone repository
-      - name: Checkout Repository
+      - name: 🎉 Checkout Repository 🎉
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
       # 2. Kiểm tra commit message cuối cùng
-      - name: Check Commit Message for Prefix
+      - name: 🚀 Check Commit Message for Prefix 🚀
         id: check-commit-message
         run: |
           LAST_COMMIT_MSG=$(git log -1 --pretty=%B)
@@ -28,13 +28,13 @@ jobs:
           fi
 
       # 3. Cấu hình Git
-      - name: Configure Git
+      - name: 🐧 Configure Git 🐧
         run: |
           git config user.name "MinhHien39"
           git config user.email "tranminhhien06072001@gmail.com"
 
       # 4. Merge develop vào main
-      - name: Merge Develop into Main
+      - name: 💡 Merge Develop into Main  💡
         id: merge
         run: |
           git checkout main
@@ -45,8 +45,8 @@ jobs:
             exit 1
           fi
 
-      # 5. Giải quyết conflict nếu có
-      - name: Resolve Conflicts
+      # 5. Giải quyết conflict nếu có 
+      - name: 🍏 Resolve Conflicts 🍏 
         if: failure() && steps.merge.outcome == 'failure'
         run: |
           git merge develop --strategy-option ours
@@ -55,7 +55,7 @@ jobs:
           git push origin main
 
       # 6. Push kết quả
-      - name: Final Push
+      - name: 🔎 Final Push 🔎
         if: success()
         run: |
           git push origin main
