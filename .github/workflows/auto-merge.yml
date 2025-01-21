@@ -22,11 +22,11 @@ jobs:
         run: |
           LAST_COMMIT_MSG=$(git log -1 --pretty=%B)
           echo "Last commit message: $LAST_COMMIT_MSG"
-          if [[ "$LAST_COMMIT_MSG" != "[MERGE]"* ]]; then
-            echo "❌ Commit message does not start with [MERGE]. Skipping merge."
+          if ! echo "$LAST_COMMIT_MSG" | grep -q "\[MERGE\]"; then
+            echo "❌ Commit message does not contain [MERGE]. Skipping merge."
             exit 1
           fi
-          echo "✅ Commit message starts with [MERGE]. Proceeding to merge."  
+          echo "✅ Commit message contains [MERGE]. Proceeding to merge."
 
       # 3. Cấu hình Git
       - name: ⚙️ Configure Git ⚙️ 
