@@ -30,12 +30,32 @@ jobs:
       # 3. Cấu hình Git
       - name: Configure Git
         run: |
-          git config user.name "Automerge Bot"
-          git config user.email "bot@example.com"
+          git config user.name "MinhHien39"
+          git config user.email "tranminhhien06072001@gmail.com"
 
-      # 4. Merge develop vào main với commit message giữ nguyên
+      # 4. Merge develop vào main
       - name: Merge Develop into Main
+        id: merge
         run: |
           git checkout main
-          git merge develop --no-ff --no-edit -m "[MERGE] Auto-merged develop into main"
+          if git merge develop --no-ff --no-edit -m "[MERGE] Auto-merged develop into main"; then
+            echo "Merge successful"
+          else
+            echo "Merge conflict detected!"
+            exit 1
+          fi
+
+      # 5. Giải quyết conflict nếu có
+      - name: Resolve Conflicts
+        if: failure() && steps.merge.outcome == 'failure'
+        run: |
+          git merge develop --strategy-option ours
+          echo "Resolving conflicts using 'ours' strategy."
+          git commit -am "[MERGE] Resolved conflict using 'ours' strategy"
+          git push origin main
+
+      # 6. Push kết quả
+      - name: Final Push
+        if: success()
+        run: |
           git push origin main
