@@ -41,14 +41,14 @@ jobs:
           git merge develop --no-ff --no-edit -m "[MERGE] Auto-merged develop into main" || exit 1
 
       # 5. Xử lý conflict với chiến lược `theirs`
-      - name: ⚠️ Handle Conflict with Theirs Strategy ⚠️
-        if: failure()
+      - name: Resolve Conflicts with Theirs Strategy
         run: |
-          echo "Conflict detected. Resolving using 'theirs' strategy."
-          git merge develop --strategy-option theirs || true
-          git status --short | grep "^UU" | awk '{print $2}' | xargs git add
-          git commit -m "[MERGE] Resolved conflicts using 'theirs' strategy"
-          git push origin main
+          echo "Starting merge with 'theirs' strategy..."
+          git merge develop -X theirs || true
+          git status --short | grep "^UU" | awk '{print $2}' | xargs git add || true
+          git commit -m "[MERGE] Resolved conflicts using 'theirs' strategy" || true
+          git push origin main || true
+
 
       # 6. Push nếu merge thành công
       - name: ✅ Push Final Merge ✅
