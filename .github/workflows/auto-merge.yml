@@ -32,11 +32,13 @@ jobs:
         env:
           GIT_USER_NAME: ${{ secrets.GIT_USER_NAME }}
           GIT_USER_EMAIL: ${{ secrets.GIT_USER_EMAIL }}
+          GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
         run: |
           git config user.name "$GIT_USER_NAME"
           git config user.email "$GIT_USER_EMAIL"
-          echo "::set-output name=git_user_name::$GIT_USER_NAME"
-          echo "::set-output name=git_user_email::$GIT_USER_EMAIL"
+          git config user.token "$GIT_TOKEN"
+          
+
 
       # 4. Merge develop vào main với commit message giữ nguyên
       - name: ✅ Merge Develop into Main ✅
