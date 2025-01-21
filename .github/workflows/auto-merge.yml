@@ -35,6 +35,8 @@ jobs:
         run: |
           git config user.name "$GIT_USER_NAME"
           git config user.email "$GIT_USER_EMAIL"
+          echo "GIT_USER_NAME: $GIT_USER_NAME"
+          echo "GIT_USER_EMAIL: $GIT_USER_EMAIL"
 
       # 4. Merge develop vào main với commit message giữ nguyên
       - name: ✅ Merge Develop into Main ✅
