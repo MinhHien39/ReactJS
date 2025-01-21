@@ -1,4 +1,4 @@
-name: Auto Merge Develop to Main with Conflict Detection
+name: Auto Merge Develop to Main with Conflict Resolution
 
 on:
   pull_request:
@@ -40,15 +40,18 @@ jobs:
           git checkout main
           git merge develop --no-ff --no-edit -m "[MERGE] Auto-merged develop into main" || exit 1
 
-      # 5. Push nếu merge thành công
-      - name: ✅ Push Final Merge ✅
-        if: ${{ steps.attempt-merge.outcome == 'success' }}
-        run: |
-          git push origin main
-
-      # 6. Thông báo nếu có conflict
-      - name: ⚠️ Notify on Conflict ⚠️
+      # 5. Xử lý conflict với chiến lược `theirs`
+      - name: ⚠️ Handle Conflict with Theirs Strategy ⚠️
         if: failure()
         run: |
-          echo "Merge conflict detected. Please resolve manually."
-          exit 1
+          echo "Conflict detected. Resolving using 'theirs' strategy."
+          git merge develop --strategy-option theirs || true
+          git status --short | grep "^UU" | awk '{print $2}' | xargs git add
+          git commit -m "[MERGE] Resolved conflicts using 'theirs' strategy"
+          git push origin main
+
+      # 6. Push nếu merge thành công
+      - name: ✅ Push Final Merge ✅
+        if: steps.attempt-merge.outcome == 'success'
+        run: |
+          git push origin main
