@@ -2,52 +2,17 @@
 
 import React from 'react';
 
-// TestComponent using a class-based approach
-class TestComponent extends React.Component {
-  render() {
-    const { title, onClick } = this.props;
-    return (
-      <div style={styles.container}>
-        <h1 style={styles.title}>{title || "Default Title"}</h1>
-        <button style={styles.button} onClick={onClick}>
-          Click Me
-        </button>
-      </div>
-    );
-  }
-}
-
-// AnotherComponent using a class-based approach
-class AnotherComponent extends React.Component {
-  render() {
-    const { description } = this.props;
-    return (
-      <div style={styles.anotherContainer}>
-        <p style={styles.description}>{description || "Default Description"}</p>
-      </div>
-    );
-  }
-}
-
-// TestComponentDev for development with extended functionality
-class TestComponentDev extends React.Component {
-  render() {
-    const { title, description, onButtonClick, onDescriptionClick } = this.props;
-    return (
-      <div style={styles.devContainer}>
-        <div style={styles.section}>
-          <h1 style={styles.title}>{title || "Development Title"}</h1>
-          <button style={styles.button} onClick={onButtonClick}>
-            Perform Action
-          </button>
-        </div>
-        <div style={styles.section} onClick={onDescriptionClick}>
-          <p style={styles.description}>{description || "Development Description"}</p>
-        </div>
-      </div>
-    );
-  }
-}
+// A simple functional component
+const TestComponent = ({ title, onClick }) => {
+  return (
+    <div style={styles.container}>
+      <h1 style={styles.title}>{title || "Default Title"}</h1>
+      <button style={styles.button} onClick={onClick}>
+        Click Me123123123
+      </button>
+    </div>
+  );
+};
 
 const styles = {
   container: {
@@ -73,31 +38,6 @@ const styles = {
     borderRadius: '4px',
     cursor: 'pointer',
   },
-  anotherContainer: {
-    padding: '15px',
-    border: '1px solid #ddd',
-    borderRadius: '6px',
-    textAlign: 'center',
-    maxWidth: '250px',
-    margin: '15px auto',
-    backgroundColor: '#fff',
-  },
-  description: {
-    fontSize: '16px',
-    color: '#555',
-  },
-  devContainer: {
-    padding: '25px',
-    border: '2px dashed #ccc',
-    borderRadius: '10px',
-    textAlign: 'left',
-    maxWidth: '400px',
-    margin: '30px auto',
-    backgroundColor: '#eaeaea',
-  },
-  section: {
-    marginBottom: '15px',
-  },
 };
 
-export { TestComponent, AnotherComponent, TestComponentDev };
+export default TestComponent;

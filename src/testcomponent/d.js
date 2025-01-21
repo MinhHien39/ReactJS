@@ -8,7 +8,7 @@ const TestComponent = ({ title, onClick }) => {
     <div style={styles.container}>
       <h1 style={styles.title}>{title || "Default Title"}</h1>
       <button style={styles.button} onClick={onClick}>
-        Click Me3213213211
+        Click Me
       </button>
     </div>
   );
@@ -17,7 +17,7 @@ const TestComponent = ({ title, onClick }) => {
 const AnotherComponent = ({ description }) => {
   return (
     <div style={styles.anotherContainer}>
-      <p style={styles.description}>{description || "Default Description123123"}</p>
+      <p style={styles.description}>{description || "Default Description"}</p>
     </div>
   );
 };
