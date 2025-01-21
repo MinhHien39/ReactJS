@@ -26,7 +26,6 @@ jobs:
             echo "Commit message does not start with [MERGE]. Exiting."
             exit 0
           fi
-
       # 3. Cấu hình Git
       - name: 🐧 Configure Git 🐧
         run: |
@@ -34,28 +33,24 @@ jobs:
           git config user.email "tranminhhien06072001@gmail.com"
 
       # 4. Merge develop vào main
-      - name: 💡 Merge Develop into Main  💡
-        id: merge
+      - name: 💡 Attempt Merge Develop into Main 💡
+        id: attempt-merge
         run: |
           git checkout main
-          if git merge develop --no-ff --no-edit -m "[MERGE] Auto-merged develop into main"; then
-            echo "Merge successful"
-          else
-            echo "Merge conflict detected!"
-            exit 1
-          fi
+          git merge develop --no-ff --no-edit -m "[MERGE] Auto-merged develop into main" || true
 
-      # 5. Giải quyết conflict nếu có 
-      - name: 🍏 Resolve Conflicts 🍏 
-        if: failure() && steps.merge.outcome == 'failure'
+      # 5. Giải quyết conflict nếu có
+      - name: 🍏 Resolve Conflicts 🍏
+        if: failure()
         run: |
-          git merge develop --strategy-option ours
-          echo "Resolving conflicts using 'ours' strategy."
-          git commit -am "[MERGE] Resolved conflict using 'ours' strategy"
+          echo "Conflict detected. Resolving using 'ours' strategy."
+          git merge develop --strategy-option ours || true
+          git status --short | grep "^UU" | awk '{print $2}' | xargs git add
+          git commit -m "[MERGE] Resolved conflict using 'ours' strategy"
           git push origin main
 
-      # 6. Push kết quả
+      # 6. Push kết quả nếu không có conflict
       - name: 🔎 Final Push 🔎
-        if: success()
+        if: steps.attempt-merge.outcome == 'success'
         run: |
           git push origin main
