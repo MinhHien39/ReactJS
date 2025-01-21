@@ -1,11 +1,11 @@
-name: Auto Merge Develop to Main
+name: Auto Merge Develop to Main with Conflict Detection
 
 on:
   pull_request:
     branches:
       - develop
     types:
-      - closed # Chỉ kích hoạt khi Pull Request vào develop được merged
+      - closed # Kích hoạt khi Pull Request vào develop được merged
 
 jobs:
   auto-merge:
@@ -13,42 +13,42 @@ jobs:
 
     steps:
       # 1. Clone repository
-      - name: Checkout Repository
+      - name: 🛠️ Checkout Repository 🛠️
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      # 2. Kiểm tra nếu Pull Request đã được merged
-      - name: Check if Pull Request is Merged
-        if: ${{ github.event.pull_request.merged == true }}
+      # 2. Kiểm tra nếu Pull Request được merged
+      - name: 🔍 Check if PR is Merged 🔍
         run: |
-          echo "Pull request has been merged into develop."
+          if [ "${{ github.event.pull_request.merged }}" != "true" ]; then
+            echo "Pull request has not been merged. Exiting."
+            exit 1
+          fi
+          echo "Pull request has been merged into develop. Proceeding to merge develop into main."
 
       # 3. Cấu hình Git
-      - name: Configure Git
+      - name: ⚙️ Configure Git ⚙️
         run: |
-          git config user.name "MinhHien39"
-          git config user.email "tranminhhien06072001@gmail.com"
+          git config user.name "AutoMerge Bot"
+          git config user.email "automerge-bot@example.com"
 
-      # 4. Thử Merge Develop vào Main
-      - name: Attempt Merge Develop into Main
-        id: merge
+      # 4. Thử merge develop vào main
+      - name: 🔄 Attempt Merge Develop into Main 🔄
+        id: attempt-merge
         run: |
           git checkout main
-          git merge develop --no-ff --no-edit -m "[MERGE] Auto-merged develop into main" || true
+          git merge develop --no-ff --no-edit -m "[MERGE] Auto-merged develop into main" || exit 1
 
-      # 5. Giải quyết Conflict nếu có
-      - name: Resolve Conflicts
-        if: steps.merge.outcome == 'failure'
-        run: |
-          echo "Conflict detected. Resolving conflicts using 'ours' strategy."
-          git merge develop --strategy-option ours || true
-          git status --short | grep "^UU" | awk '{print $2}' | xargs git add
-          git commit -m "[MERGE] Resolved conflict using 'ours' strategy"
-          git push origin main
-
-      # 6. Push kết quả nếu không có Conflict
-      - name: Push Final Merge
-        if: steps.merge.outcome == 'success'
+      # 5. Push nếu merge thành công
+      - name: ✅ Push Final Merge ✅
+        if: ${{ steps.attempt-merge.outcome == 'success' }}
         run: |
           git push origin main
+
+      # 6. Thông báo nếu có conflict
+      - name: ⚠️ Notify on Conflict ⚠️
+        if: failure()
+        run: |
+          echo "Merge conflict detected. Please resolve manually."
+          exit 1
