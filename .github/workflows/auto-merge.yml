@@ -1,9 +1,26 @@
 name: Auto Merge Develop to Main
 on:
   push:
-    branches:
-      - develop # Kích hoạt khi có thay đổi trên nhánh develop
+    branches: [develop] # Kích hoạt khi có thay đổi trên nhánh develop
 jobs:
+  build-and-run: 
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix: # có thể chạy multiple node version bỏ version muốn vào mảng 
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        node-version: [18.x]
+    
+    steps:
+      - name: 🛠️ Checkout Repository 🛠️
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup node version ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with: 
+          node-version: ${{ matrix.node-version }}
   auto-merge:
     runs-on: ubuntu-latest
     environment: auto-merge-env
@@ -34,12 +51,9 @@ jobs:
           GIT_USER_EMAIL: ${{ secrets.GIT_USER_EMAIL }}
           GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
         run: |
-          echo "$GIT_USER_NAME" > git_user_name.txt
-          echo "$GIT_USER_EMAIL" > git_user_email.txt
-          echo "$GIT_TOKEN" > git_token.txt
-          cat git_user_name.txt
-          cat git_user_email.txt
-          cat git_token.txt
+          git config user.name "$GIT_USER_NAME"
+          git config user.email "$GIT_USER_EMAIL"
+          git config user.token "$GIT_TOKEN"
           
 
 

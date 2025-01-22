@@ -9,7 +9,7 @@ const TestComponent = ({ title, onClick }) => {
       <h1 style={styles.title}>{title || "Default Title"}</h1>
       <button style={styles.button} onClick={onClick}>
 
-        BBCCDDEEFF223344556677889900112233445566
+        BASCSSSS
 
       </button>
     </div>
