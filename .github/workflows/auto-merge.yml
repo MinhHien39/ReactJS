@@ -25,6 +25,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+
       # # 3. Cài đặt dependencies
       # - name: 📥 Install Dependencies 📥
       #   run: npm install
@@ -39,6 +40,24 @@ jobs:
       #     npm start &
       #     sleep 10 # Chờ ứng dụng khởi chạy
       #     curl -I http://localhost:3000 # Kiểm tra ứng dụng đã chạy
+
+      
+  explore-github:
+      runs-on: ubuntu-lastest
+      needs: build-and-run
+      steps:
+        - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+        - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
+        - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+        - name: Check out repository code
+          uses: actions/checkout@v4
+        - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
+        - run: echo "🖥️ The workflow is now ready to test your code on the runner."
+        - name: List files in the repository
+          run: |
+            ls ${{ github.workspace }}
+        - run: echo "🍏 This job's status is ${{ job.status }}."
+
 
   auto-merge:
     runs-on: ubuntu-latest
