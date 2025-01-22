@@ -1,7 +1,8 @@
 name: Auto Merge Develop to Main
 on:
   push:
-    branches: [develop] # Kích hoạt khi có thay đổi trên nhánh develop
+    branches: 
+        - develop # Kích hoạt khi có thay đổi trên nhánh develop
 jobs:
   build-and-run: 
     runs-on: ubuntu-latest
