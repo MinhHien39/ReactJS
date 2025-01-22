@@ -1,29 +1,49 @@
 name: Auto Merge Develop to Main
+
 on:
   push:
-    branches: [develop] # Kích hoạt khi có thay đổi trên nhánh develop
+    branches:
+      - develop # Kích hoạt khi có thay đổi trên nhánh develop
+
 jobs:
-  build-and-run: 
+  build-and-run:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix: # có thể chạy multiple node version bỏ version muốn vào mảng 
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-        node-version: [18.x]
-    
+    strategy: 
+        matrix: 
+          node-version: [18.x]
     steps:
+      # 1. Clone repository
       - name: 🛠️ Checkout Repository 🛠️
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      - name: Setup node version ${{ matrix.node-version }}
+      # 2. Cài đặt môi trường
+      - name: 📦 Setup Node.js ${{ matrix.node-version }}📦
         uses: actions/setup-node@v3
-        with: 
+        with:
           node-version: ${{ matrix.node-version }}
+
+      # # 3. Cài đặt dependencies
+      # - name: 📥 Install Dependencies 📥
+      #   run: npm install
+
+      # # 4. Build ứng dụng
+      # - name: 🛠️ Build Application 🛠️
+      #   run: npm run build
+
+      # # 5. Chạy ứng dụng để kiểm tra
+      # - name: 🚀 Run Application 🚀
+      #   run: |
+      #     npm start &
+      #     sleep 10 # Chờ ứng dụng khởi chạy
+      #     curl -I http://localhost:3000 # Kiểm tra ứng dụng đã chạy
+
   auto-merge:
     runs-on: ubuntu-latest
     environment: auto-merge-env
+    needs: build-and-run 
 
     steps:
       # 1. Clone repository
@@ -54,8 +74,6 @@ jobs:
           git config user.name "$GIT_USER_NAME"
           git config user.email "$GIT_USER_EMAIL"
           git config user.token "$GIT_TOKEN"
-          
-
 
       # 4. Merge develop vào main với commit message giữ nguyên
       - name: ✅ Merge Develop into Main ✅
