@@ -43,7 +43,7 @@ jobs:
 
       
   explore-github:
-      runs-on: ubuntu-lastest
+      runs-on: ubuntu-latest
       needs: build-and-run
       steps:
         - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
