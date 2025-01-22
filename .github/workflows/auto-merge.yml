@@ -100,3 +100,29 @@ jobs:
           git checkout main
           git merge develop --no-ff --no-edit -m "[MERGE] Auto-merged develop into main"
           git push origin main
+    
+  after-rebase-main:
+    runs-on: ubuntu-latest
+    needs: auto-merge
+    steps:
+      - name: 🎉 Log GitHub Event
+        run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+
+      - name: 🔎 Log Repository Info
+        run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+
+      - name: Check out Repository Code
+        uses: actions/checkout@v4
+
+      - name: 💡 Log Clone Info
+        run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
+        
+      - name: Checkout to `develop` Branch
+        run: |
+          git checkout develop
+          echo "✅ Switched to the 'develop' branch."
+
+      - name: Pull Latest Changes from `develop`
+        run: |
+          git pull origin develop
+          echo "✅ Pulled the latest changes from the 'develop' branch."
