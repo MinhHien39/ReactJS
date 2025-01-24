@@ -1,7 +1,7 @@
 name: Manual Merge Develop to Main
 
 on:
-  workflow_dispatch: # Chỉ kích hoạt khi nhấn nút "Run workflow"
+  workflow_dispatch: # Kích hoạt khi nhấn nút "Run workflow"
     inputs:
       target_branch:
         description: "Target branch to merge into"
@@ -9,7 +9,7 @@ on:
         default: "main"
 
 jobs:
-  manual-merge:
+  check-and-merge:
     runs-on: ubuntu-latest
     steps:
       # 1. Clone repository
@@ -20,14 +20,11 @@ jobs:
 
       # 2. Cấu hình Git
       - name: ⚙️ Configure Git ⚙️
-        env:
-          GIT_USER_NAME: ${{ secrets.GIT_USER_NAME }}
-          GIT_USER_EMAIL: ${{ secrets.GIT_USER_EMAIL }}
         run: |
-          git config user.name "$GIT_USER_NAME"
-          git config user.email "$GIT_USER_EMAIL"
+          git config user.name "MinhHien39"
+          git config user.email "tranminhhien06072001@gmail.com"
 
-      # 3. Kiểm tra nếu có conflict
+      # 3. Kiểm tra xung đột
       - name: 🔍 Check for Merge Conflicts
         id: check-conflict
         run: |
@@ -37,14 +34,15 @@ jobs:
           git merge --no-commit --no-ff develop || echo "::set-output name=conflict::true"
         continue-on-error: true
 
+      # 4. Hiển thị lỗi nếu có conflict
       - name: ❌ Handle Conflict
         if: steps.check-conflict.outputs.conflict == 'true'
         run: |
           echo "❌ Merge conflict detected! Please resolve conflicts manually."
           exit 1
 
-      # 4. Merge develop vào main nếu không có conflict
-      - name: ✅ Merge Develop into Main ✅
+      # 5. Merge develop vào main nếu không có conflict
+      - name: ✅ Manual Merge Develop into Main ✅
         if: steps.check-conflict.outputs.conflict != 'true'
         run: |
           git checkout ${{ github.event.inputs.target_branch }}
