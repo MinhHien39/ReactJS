@@ -1,7 +1,10 @@
-name: Manual Merge Develop to Main
+name: Manage Develop to Main
 
 on:
-  workflow_dispatch: # Kích hoạt khi nhấn nút "Run workflow"
+  push:
+    branches:
+      - develop # Tự động kiểm tra xung đột khi develop thay đổi
+  workflow_dispatch: # Cho phép merge thủ công qua nút "Run workflow"
     inputs:
       target_branch:
         description: "Target branch to merge into"
@@ -9,7 +12,8 @@ on:
         default: "main"
 
 jobs:
-  check-and-merge:
+  check-conflict:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       # 1. Clone repository
@@ -28,22 +32,40 @@ jobs:
       - name: 🔍 Check for Merge Conflicts
         id: check-conflict
         run: |
-          git fetch origin ${{ github.event.inputs.target_branch }}
+          git fetch origin main
           git fetch origin develop
-          git checkout ${{ github.event.inputs.target_branch }}
+          git checkout main
           git merge --no-commit --no-ff develop || echo "::set-output name=conflict::true"
         continue-on-error: true
 
-      # 4. Hiển thị lỗi nếu có conflict
-      - name: ❌ Handle Conflict
-        if: steps.check-conflict.outputs.conflict == 'true'
+      # 4. Thông báo trạng thái
+      - name: 🚀 Show Merge Status
         run: |
-          echo "❌ Merge conflict detected! Please resolve conflicts manually."
-          exit 1
+          if [[ "${{ steps.check-conflict.outputs.conflict }}" == "true" ]]; then
+            echo "❌ Conflict detected between develop and main. Please fix conflicts."
+            exit 1
+          else
+            echo "✅ No conflict detected. You can manually merge develop into main."
+          fi
 
-      # 5. Merge develop vào main nếu không có conflict
+  manual-merge:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Clone repository
+      - name: 🛠️ Checkout Repository 🛠️
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      # 2. Cấu hình Git
+      - name: ⚙️ Configure Git ⚙️
+        run: |
+          git config user.name "YourUsername"
+          git config user.email "your.email@example.com"
+
+      # 3. Merge develop vào main
       - name: ✅ Manual Merge Develop into Main ✅
-        if: steps.check-conflict.outputs.conflict != 'true'
         run: |
           git checkout ${{ github.event.inputs.target_branch }}
           git merge develop --no-ff -m "Manual merge from develop to ${{ github.event.inputs.target_branch }}"
